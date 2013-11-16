@@ -1,5 +1,89 @@
 extends layout
 
 block content
-  h1= title
-  p Welcome to #{title}
+  .container
+    .spinner
+      button(class='btn btn-default')=title
+    .slideshow(style='overflow:hidden')
+    .ytplayer
+
+block script
+  script
+    $(function(){
+      var $slideshow = $('.slideshow');
+      var $ytplayer = $('.ytplayer');
+
+      $('button').click(function() {
+        $ytplayer.empty();
+        $ytplayer.hide();
+        $slideshow.show();
+        cycleImages();
+      });
+
+      $(document).on('click', 'img', function() {
+        var id = $(this).attr('data-video-id');
+        showPlayer(id);
+        return false;
+      });
+
+      var cycleImages = function() {
+        // http://jquery.malsup.com/cycle/options.html
+        $slideshow.cycle(
+        {
+          activePagerClass: 'activeSlide', 
+          fx: 'scrollUp', // choose your transition type, ex: fade, scrollUp, shuffle, etc...
+          fit: 1,
+          timeout: 1,
+          speed: 120,
+          random: 1,
+          autostop: 1,
+          autostopCount: 7, // Number of images + some
+          end: playVideo
+        });
+      };
+
+      var getCats = function() {
+        $.ajax({
+          url: '/cats.json',
+          dataType: 'json',
+          success: fillCats
+        });
+      };
+
+      var fillCats = function(data) {
+        $slideshow.empty();
+        data.forEach(function(item, index) {
+          $slideshow.append(htmlData(item.image, item.id));
+        });
+      };
+
+      var playVideo = function(data) {
+        var id = data.elements[data.currSlide].attributes[4].value;
+        showPlayer(id);
+      }
+
+      var showPlayer = function(id) {
+        $ytplayer.empty();
+        $ytplayer.hide();
+        $ytplayer.append(playerData(id));
+        $slideshow.hide();
+        $ytplayer.show();
+      };
+
+      var htmlData = function(imageSrc, videoId) {
+        var html = "<img src='"+imageSrc+"' width='480', height='360', data-video-id='"+videoId+"'>";
+        //console.log(html);
+        return html;
+      }
+
+      var playerData = function(videoId) {
+        html = '<iframe id="ytplayer" type="text/html" width="510" height="390"';
+        html += 'src="http://www.youtube.com/embed/'+videoId+'?autoplay=1&origin=http://cat-roulette.herokuapp.com"';
+        html += 'frameborder="1"/>';
+        return html
+      }
+
+      getCats();
+
+
+    });
