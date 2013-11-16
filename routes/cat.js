@@ -15,12 +15,14 @@ exports.list = function(req, res){
       .execute(function(err, client) {
 
     var params = {
-      q: 'cat',
-      part: 'snippet', 
-      type: 'video',
-      videoEmbeddable: 'true',
-      maxResults: 20,
-      fields: 'items(id,snippet)'
+      q:                'cat',
+      part:             'snippet', 
+      type:             'video',
+      videoEmbeddable:  'true',
+      videoDuration:    'short',
+      safeSearch:       'strict',
+      maxResults:       50,
+      fields:           'items(id,snippet)'
     }
     
     var req = client.youtube.search.list(params).withApiKey(API_KEY);
