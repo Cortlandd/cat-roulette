@@ -4,6 +4,7 @@
  */
 
 var express = require('express');
+var device = require('express-device');
 var routes = require('./routes');
 var user = require('./routes/user');
 var http = require('http');
